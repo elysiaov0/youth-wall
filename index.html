@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>青春频道</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0e18;
+    --border: rgba(255,255,255,.1);
+    --muted: rgba(255,255,255,.45);
+    --accent: #c9b6ff;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: #fff;
+    overflow-x: hidden;
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* 封面 */
+  #view-cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  #view-cover::before {
+    content: "";
+    position: absolute;
+    width: 780px; height: 780px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,123,255,.22), transparent 62%);
+    top: -280px; left: -220px;
+    animation: drift 14s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  #view-cover::after {
+    content: "";
+    position: absolute;
+    width: 640px; height: 640px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,214,150,.14), transparent 60%);
+    bottom: -280px; right: -200px;
+    animation: drift 18s ease-in-out infinite alternate-reverse;
+    pointer-events: none;
+  }
+  @keyframes drift {
+    from { transform: translate(0,0); }
+    to   { transform: translate(44px,32px); }
+  }
+  .cover-inner { position: relative; z-index: 1; }
+  .cover-kicker { font-size: 12px; letter-spacing: .42em; color: var(--muted); margin-bottom: 22px; }
+  .cover-title {
+    font-family: "Songti SC", "STSong", Georgia, serif;
+    font-size: clamp(46px, 10vw, 86px);
+    letter-spacing: .16em;
+    font-weight: 600;
+    line-height: 1.1;
+    background: linear-gradient(120deg, #fff 10%, #c9b6ff 45%, #ffe9a8 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 20px;
+  }
+  .cover-sub { font-size: clamp(14px, 2.5vw, 17px); color: rgba(255,255,255,.55); letter-spacing: .2em; margin-bottom: 46px; }
+  .enter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #8b7bff, #c9b6ff);
+    color: #1a1030;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(139,123,255,.35);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .enter-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(139,123,255,.5); }
+  .cover-foot {
+    position: absolute;
+    bottom: 28px; left: 0; right: 0;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: .22em;
+    color: rgba(255,255,255,.22);
+  }
+
+  /* 论坛 */
+  #view-forum { min-height: 100vh; }
+  #view-forum.active {
+    display: flex;
+    animation: fadeUp .35s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    padding: 24px 12px;
+    background: rgba(255,255,255,.035);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .brand {
+    font-family: "Songti SC", "STSong", Georgia, serif;
+    font-size: 20px;
+    letter-spacing: .12em;
+    padding: 0 10px;
+  }
+  .brand small {
+    display: block;
+    font-family: inherit;
+    font-size: 10px;
+    letter-spacing: .3em;
+    color: var(--muted);
+    margin-top: 7px;
+  }
+  .board-list { display: flex; flex-direction: column; gap: 4px; }
+  .board-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255,255,255,.72);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .board-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .board-item.active {
+    background: rgba(201,182,255,.12);
+    border-color: rgba(201,182,255,.32);
+    color: #fff;
+  }
+  .board-item .icon { font-size: 17px; line-height: 1.5; flex-shrink: 0; }
+  .board-item .info { flex: 1; min-width: 0; }
+  .board-item .name { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .board-item .desc { display: block; margin-top: 2px; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .new-channel-btn {
+    padding: 9px 12px;
+    border-radius: 9px;
+    border: 1px dashed rgba(201,182,255,.35);
+    
